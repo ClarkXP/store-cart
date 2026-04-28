@@ -18,22 +18,24 @@ import javax.inject.Inject
 
 @HiltViewModel
 class DetailViewModel @Inject constructor(
-    savedStateHandle: SavedStateHandle, // Para recibir argumentos de navegación automáticamente
+    savedStateHandle: SavedStateHandle,
     private val getProductDetailUseCase: GetProductDetailUseCase,
     private val getCartUseCase: GetCartUseCase,
     private val addToCartUseCase: AddToCartUseCase,
     private val decreaseQuantityUseCase: DecreaseQuantityUseCase
 ) : ViewModel() {
 
-    // Recuperamos el ID desde la ruta de navegación (definido en MainActivity como "productId")
+    // Recuperamos el ID desde la ruta de navegación
     private val productId: Int = checkNotNull(savedStateHandle["productId"])
+
+    // --- CANALES ---
+    private val intentChannel = Channel<DetailIntent>(Channel.UNLIMITED)
+
+    private val _effect = Channel<DetailEffect>()
+    val effect = _effect.receiveAsFlow()
 
     // Estado interno del producto
     private val _productRes = MutableStateFlow<Resource<Product>>(Resource.Loading())
-
-    // Canal de efectos
-    private val _effect = Channel<DetailEffect>()
-    val effect = _effect.receiveAsFlow()
 
     // ESTADO UI COMBINADO
     val state: StateFlow<DetailState> = combine(
@@ -61,20 +63,33 @@ class DetailViewModel @Inject constructor(
 
     init {
         loadProduct(productId)
+        processIntents()
+    }
+
+    // --- PROCESADOR DE INTENCIONES (Input Único Secuencial) ---
+    private fun processIntents() {
+        viewModelScope.launch {
+            intentChannel.consumeAsFlow().collect { intent ->
+                when (intent) {
+                    is DetailIntent.LoadProduct -> loadProduct(intent.productId)
+                    is DetailIntent.IncreaseQuantity -> {
+                        addToCartUseCase(intent.product)
+                    }
+                    is DetailIntent.DecreaseQuantity -> {
+                        decreaseQuantityUseCase(intent.productId)
+                    }
+                    is DetailIntent.OnBackClick -> {
+                        _effect.send(DetailEffect.NavigateBack)
+                    }
+                }
+            }
+        }
     }
 
     fun onIntent(intent: DetailIntent) {
-        when (intent) {
-            is DetailIntent.LoadProduct -> loadProduct(intent.productId)
-            is DetailIntent.IncreaseQuantity -> {
-                viewModelScope.launch { addToCartUseCase(intent.product) }
-            }
-            is DetailIntent.DecreaseQuantity -> {
-                viewModelScope.launch { decreaseQuantityUseCase(intent.productId) }
-            }
-            is DetailIntent.OnBackClick -> {
-                viewModelScope.launch { _effect.send(DetailEffect.NavigateBack) }
-            }
+        val result = intentChannel.trySend(intent)
+        if (result.isFailure) {
+            // Manejo opcional si el canal se cierra/falla
         }
     }
 
