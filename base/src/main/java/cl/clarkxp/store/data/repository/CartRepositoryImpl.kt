@@ -25,19 +25,9 @@ class CartRepositoryImpl @Inject constructor(
         return dao.getTotalItemsCount().map { it ?: 0 }
     }
 
-    //función para agregar productos al carrito
+    // Usamos el método atómico del DAO para evitar condiciones de carrera (read-modify-write)
     override suspend fun addToCart(product: Product) {
-        // Verificamos si ya existe
-        val existingItem = dao.getCartItemById(product.id)
-
-        if (existingItem != null) {
-            //Si existe, sumamos +1 a la cantidad
-            val updatedItem = existingItem.copy(quantity = existingItem.quantity + 1)
-            dao.insertCartItem(updatedItem)
-        } else {
-            // Si no existe, lo creamos con cantidad 1
-            dao.insertCartItem(product.toCartEntity(quantity = 1))
-        }
+        dao.atomicAddToCart(product.toCartEntity(quantity = 1))
     }
 
     override suspend fun updateQuantity(cartItem: CartItem, newQuantity: Int) {
@@ -51,16 +41,9 @@ class CartRepositoryImpl @Inject constructor(
         dao.deleteCartItem(cartItem.toEntity())
     }
 
+    // Usamos el método atómico del DAO para evitar condiciones de carrera (read-modify-write)
     override suspend fun decreaseQuantity(productId: Int) {
-        //revisamos que el producto exista en el carro, sino salimos de la ejecución
-        val currentItem = dao.getCartItemById(productId) ?: return
-        val newQuantity = currentItem.quantity - 1
-
-        if (newQuantity <= 0) {
-            dao.deleteCartItem(currentItem)
-        } else {
-            dao.insertCartItem(currentItem.copy(quantity = newQuantity))
-        }
+        dao.atomicDecreaseQuantity(productId)
     }
 
     override suspend fun clearCart() {

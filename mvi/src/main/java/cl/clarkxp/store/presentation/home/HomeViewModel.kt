@@ -22,9 +22,9 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.consumeAsFlow
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -40,30 +40,26 @@ class HomeViewModel @Inject constructor(
 ) : ViewModel() {
 
     // --- 1. ESTADO INTERNO ---
-    // Mantenemos los flujos raw para combinarlos
     private val _rawProducts = MutableStateFlow<Resource<List<Product>>>(Resource.Loading())
     private val _selectedCategory = MutableStateFlow("Todos")
     private val _selectedProductForDetail = MutableStateFlow<ProductUiModel?>(null)
-
-    // Iniciamos con "Todos" para que siempre exista esa opción
     private val _categories = MutableStateFlow<List<String>>(listOf("Todos"))
 
-    // --- 2. CANAL DE EFECTOS (Eventos de una sola vez) ---
+    // --- 2. CANALES (Efectos e Intents) ---
     private val _effect = Channel<HomeEffect>()
     val effect = _effect.receiveAsFlow()
 
-    // --- 3. ESTADO UI MVI (La joya de la corona) ---
-    // Combinamos: Productos API + Carrito DB + Categoría Seleccionada + Contador
+    private val intentChannel = Channel<HomeIntent>(Channel.UNLIMITED)
+
+    // --- 3. ESTADO UI MVI ---
     val state: StateFlow<HomeState> = combine(
         _rawProducts,
         getCartUseCase(),
         _selectedCategory,
-        //getCartItemCountUseCase(),
         _categories,
         _selectedProductForDetail
     ) { productsRes, cartState, category, categoriesList, selectedProduct ->
 
-        // Transformamos todo esto en un único HomeState
         val currentUiModels = when (productsRes) {
             is Resource.Success -> {
                 val cartMap = cartState.items.associate { it.id to it.quantity }
@@ -71,7 +67,6 @@ class HomeViewModel @Inject constructor(
                     ProductUiModel(product, cartMap[product.id] ?: 0)
                 } ?: emptyList()
             }
-
             else -> emptyList()
         }
 
@@ -100,64 +95,65 @@ class HomeViewModel @Inject constructor(
     init {
         loadCategories()
         loadProducts("Todos")
+        processIntents()
     }
 
     private fun loadCategories() {
         viewModelScope.launch {
             getCategoriesUseCase().collect { result ->
                 if (result is Resource.Success) {
-                    // Agregamos "Todos" al principio de la lista que viene de la API
                     val apiCategories = result.data ?: emptyList()
-                    // Capitalizamos la primera letra de cada categoría para que se vea bien
                     val formattedCategories = apiCategories.map { it.capitalizeWords() }
-
                     _categories.value = listOf("Todos") + formattedCategories
                 }
-                // Opcional: Manejar error de categorías (aunque no debería bloquear la app)
             }
         }
     }
 
-    // --- 4. PROCESADOR DE INTENCIONES (Input Único) ---
+    // --- 4. PROCESADOR DE INTENCIONES (Input Único Secuencial) ---
+    private fun processIntents() {
+        viewModelScope.launch {
+            intentChannel.consumeAsFlow().collect { intent ->
+                when (intent) {
+                    is HomeIntent.ChangeCategory -> {
+                        _selectedCategory.value = intent.category
+                        loadProducts(intent.category)
+                    }
+                    is HomeIntent.IncreaseQuantity -> {
+                        // Al procesar secuencialmente con atomicidad en BD, prevenimos condiciones de carrera
+                        addToCartUseCase(intent.product)
+                    }
+                    is HomeIntent.DecreaseQuantity -> {
+                        decreaseQuantityUseCase(intent.productId)
+                    }
+                    is HomeIntent.OnProductClick -> {
+                        val selectedProduct = state.value.products.find { it.product.id == intent.productId }
+                        _selectedProductForDetail.value = selectedProduct
+                    }
+                    is HomeIntent.DismissDetail -> {
+                        _selectedProductForDetail.value = null
+                    }
+                    is HomeIntent.OnCartClick -> {
+                        sendEffect(HomeEffect.NavigateToCart)
+                    }
+                }
+            }
+        }
+    }
+
     fun onIntent(intent: HomeIntent) {
-        when (intent) {
-            is HomeIntent.ChangeCategory -> {
-                _selectedCategory.value = intent.category
-                loadProducts(intent.category)
-            }
-
-            is HomeIntent.IncreaseQuantity -> {
-                viewModelScope.launch { addToCartUseCase(intent.product) }
-            }
-
-            is HomeIntent.DecreaseQuantity -> {
-                viewModelScope.launch { decreaseQuantityUseCase(intent.productId) }
-            }
-
-            is HomeIntent.OnProductClick -> {
-                //sendEffect(HomeEffect.NavigateToDetail(intent.productId))
-                val selectedProduct =
-                    state.value.products.find { it.product.id == intent.productId }
-                _selectedProductForDetail.value = selectedProduct
-            }
-
-            is HomeIntent.DismissDetail -> {
-                _selectedProductForDetail.value = null
-            }
-
-            is HomeIntent.OnCartClick -> {
-                sendEffect(HomeEffect.NavigateToCart)
-            }
+        // Enviamos al canal en lugar de procesar directamente
+        val result = intentChannel.trySend(intent)
+        if (result.isFailure) {
+            // Manejo opcional si el canal se cierra/falla
         }
     }
 
-    // Lógica privada (igual que antes, pero alimentando _rawProducts)
     private fun loadProducts(category: String) {
-        val flow =
-            if (category == "Todos") getProductsUseCase() else getProductsByCategoryUseCase(category)
+        val flow = if (category == "Todos") getProductsUseCase() else getProductsByCategoryUseCase(category)
 
         viewModelScope.launch {
-            _rawProducts.value = Resource.Loading() // Emitir loading inmediato al cambiar
+            _rawProducts.value = Resource.Loading() 
             flow.collect { result ->
                 _rawProducts.value = result
             }

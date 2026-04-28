@@ -24,6 +24,8 @@ archCoreTesting = "2.2.0"
 extJunit = "1.1.5"
 espresso = "3.5.1"
 fragment = "1.7.1"
+androidxTestCore = "1.5.0"
+robolectric = "4.11.1"
 
 [libraries]
 # Base & UI
@@ -74,6 +76,7 @@ okhttp-logging = { group = "com.squareup.okhttp3", name = "logging-interceptor",
 room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "room" }
 room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "room" }
 room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "room" }
+room-testing = { group = "androidx.room", name = "room-testing", version.ref = "room" }
 
 # Coil
 coil = { group = "io.coil-kt", name = "coil", version.ref = "coil" }
@@ -86,6 +89,8 @@ coroutines-test = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-
 androidx-arch-testing = { group = "androidx.arch.core", name = "core-testing", version.ref = "archCoreTesting" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "extJunit" }
 androidx-espresso = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espresso" }
+androidx-test-core = { group = "androidx.test", name = "core", version.ref = "androidxTestCore" }
+robolectric = { group = "org.robolectric", name = "robolectric", version.ref = "robolectric" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }
