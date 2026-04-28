@@ -1,0 +1,29 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Base application theme. -->
+    <style name="Base.Theme.Store" parent="Theme.Material3.DayNight.NoActionBar">
+        <!-- Customize your light theme here. -->
+        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+
+<!--        <item name="android:statusBarColor">@android:color/transparent</item>-->
+<!--        <item name="android:windowDrawsSystemBarBackgrounds">true</item>-->
+<!--        <item name="android:windowLightStatusBar">true</item>-->
+    </style>
+
+    <style name="Theme.Store" parent="Base.Theme.Store" />
+
+    <style name="BottomSheetDialogTheme" parent="Theme.Material3.DayNight.BottomSheetDialog">
+        <item name="bottomSheetStyle">@style/CustomBottomSheetStyle</item>
+    </style>
+
+    <style name="CustomBottomSheetStyle" parent="Widget.Design.BottomSheet.Modal">
+        <item name="android:background">@drawable/bg_bottom_sheet</item>
+    </style>
+    
+    <style name="Widget.Store.Button.Cart.Quantity" parent="Widget.Material3Expressive.Button.IconButton.Filled">
+        <item name="materialSizeOverlay">@style/SizeOverlay.Material3Expressive.Button.IconButton.Xsmall.Square</item>
+    </style>
+
+    <style name="Widget.Store.Button.Cart.Initial" parent="Widget.Material3Expressive.Button.OutlinedButton">
+
+    </style>
+</resources>

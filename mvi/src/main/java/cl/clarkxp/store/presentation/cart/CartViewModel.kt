@@ -1,0 +1,87 @@
+package cl.clarkxp.store.presentation.cart
+
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import cl.clarkxp.store.domain.usecase.CartState as DomainCartState
+import cl.clarkxp.store.domain.usecase.ClearCartUseCase
+import cl.clarkxp.store.domain.usecase.GetCartUseCase
+import cl.clarkxp.store.domain.usecase.UpdateCartQuantityUseCase
+import cl.clarkxp.store.presentation.cart.mvi.CartEffect
+import cl.clarkxp.store.presentation.cart.mvi.CartIntent
+import cl.clarkxp.store.presentation.cart.mvi.CartState
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.launch
+import javax.inject.Inject
+
+@HiltViewModel
+class CartViewModel @Inject constructor(
+    getCartUseCase: GetCartUseCase,
+    private val updateCartQuantityUseCase: UpdateCartQuantityUseCase,
+    private val clearCartUseCase: ClearCartUseCase
+) : ViewModel() {
+
+    // Estado interno para controlar el diálogo
+    private val _showDialog = MutableStateFlow(false)
+
+    // Canal de efectos
+    private val _effect = Channel<CartEffect>()
+    val effect = _effect.receiveAsFlow()
+
+    // ESTADO UI COMBINADO
+    val state: StateFlow<CartState> = combine(
+        getCartUseCase(),
+        _showDialog
+    ) { domainState: DomainCartState, showDialog: Boolean ->
+        CartState(
+            isLoading = false,
+            items = domainState.items,
+            totalAmount = domainState.totalAmount,
+            showClearDialog = showDialog
+        )
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = CartState()
+    )
+
+    fun onIntent(intent: CartIntent) {
+        when (intent) {
+            is CartIntent.IncreaseQuantity -> {
+                viewModelScope.launch {
+                    updateCartQuantityUseCase(intent.item, intent.item.quantity + 1)
+                }
+            }
+            is CartIntent.DecreaseQuantity -> {
+                viewModelScope.launch {
+                    updateCartQuantityUseCase(intent.item, intent.item.quantity - 1)
+                }
+            }
+            is CartIntent.OnClearCartClick -> {
+                // Solo mostramos diálogo si hay items
+                if (state.value.items.isNotEmpty()) {
+                    _showDialog.value = true
+                } else {
+                    sendEffect(CartEffect.ShowSnackbar("El carro ya está vacío"))
+                }
+            }
+            is CartIntent.OnConfirmClearCart -> {
+                viewModelScope.launch {
+                    clearCartUseCase()
+                    _showDialog.value = false
+                    sendEffect(CartEffect.ShowSnackbar("Carro vaciado"))
+                }
+            }
+            is CartIntent.OnDismissClearDialog -> {
+                _showDialog.value = false
+            }
+            is CartIntent.OnBackClick -> sendEffect(CartEffect.NavigateBack)
+            is CartIntent.OnCheckoutClick -> sendEffect(CartEffect.ShowSnackbar("Compra simulada exitosa"))
+        }
+    }
+
+    private fun sendEffect(effect: CartEffect) {
+        viewModelScope.launch { _effect.send(effect) }
+    }
+}

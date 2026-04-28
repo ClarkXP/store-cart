@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="8dp"
+    app:cardCornerRadius="8dp"
+    app:cardElevation="2dp">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:clipChildren="false"
+        android:clipToPadding="false"
+        android:padding="16dp">
+
+        <ImageView
+            android:id="@+id/ivProduct"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:scaleType="fitCenter"
+            android:src="@drawable/ic_launcher_background"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintDimensionRatio="1:1"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/tvFeaturedLabel"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="Mejor Valorado"
+            android:textSize="14sp"
+            android:textAllCaps="true"
+            android:letterSpacing="0.05"
+            android:textStyle="bold"
+            android:textColor="#D32F2F"
+            android:layout_marginStart="16dp"
+            app:layout_constraintStart_toEndOf="@id/ivProduct"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/ivProduct" />
+        <TextView
+            android:id="@+id/tvTitle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            tools:text="SanDisk SSD Plus 1TB Internal SSD - SATA III 6 Gb/s"
+            android:textSize="16sp"
+            android:layout_marginTop="4dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="8dp"
+            android:maxLines="2"
+            android:ellipsize="end"
+            app:layout_constraintStart_toEndOf="@id/ivProduct"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tvFeaturedLabel" />
+
+        <RatingBar
+            android:id="@+id/ratingBar"
+            style="?android:attr/ratingBarStyleSmall"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:layout_marginStart="16dp"
+            android:numStars="5"
+            android:progressTint="#FFC107"
+            android:secondaryProgressTint="#FFC107"
+            app:layout_constraintStart_toEndOf="@id/ivProduct"
+            app:layout_constraintTop_toBottomOf="@id/tvTitle" />
+
+        <TextView
+            android:id="@+id/tvRatingCount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            tools:text="(120)"
+            android:textSize="12sp"
+            android:textColor="#757575"
+            android:layout_marginStart="4dp"
+            app:layout_constraintStart_toEndOf="@id/ratingBar"
+            app:layout_constraintBottom_toBottomOf="@id/ratingBar"
+            app:layout_constraintTop_toTopOf="@id/ratingBar" />
+
+        <TextView
+            android:id="@+id/tvPrice"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            tools:text="$ 35.990"
+            android:textColor="?attr/colorPrimary"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:layout_marginTop="8dp"
+            android:layout_marginStart="16dp"
+            app:layout_constraintStart_toEndOf="@id/ivProduct"
+            app:layout_constraintTop_toBottomOf="@id/ratingBar" />
+
+        <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+            android:id="@+id/btnInitialAdd"
+            style="?attr/extendedFloatingActionButtonSmallStyle"
+            app:materialThemeOverlay="@style/ThemeOverlay.Material3Expressive.FloatingActionButton.Primary"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="Agregar"
+            app:icon="@drawable/ic_plus"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/ivProduct"
+            app:layout_constraintTop_toBottomOf="@+id/tvPrice" />
+
+        <LinearLayout
+            android:id="@+id/quantityControlsGroup"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:clipChildren="false"
+            android:clipToPadding="false"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/ivProduct"
+            app:layout_constraintTop_toBottomOf="@+id/tvPrice">
+
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
+                android:id="@+id/btnMinus"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="2dp"
+                android:src="@drawable/ic_minus"
+                app:materialThemeOverlay="@style/ThemeOverlay.Material3Expressive.FloatingActionButton.Primary"
+                app:fabSize="mini" />
+
+            <TextView
+                android:id="@+id/tvQuantity"
+                android:layout_width="30dp"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="4dp"
+                android:gravity="center"
+                android:text="1"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
+                android:id="@+id/btnPlus"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="2dp"
+                android:src="@drawable/ic_plus"
+                app:materialThemeOverlay="@style/ThemeOverlay.Material3Expressive.FloatingActionButton.Primary"
+                app:fabSize="mini" />
+
+        </LinearLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</com.google.android.material.card.MaterialCardView>
