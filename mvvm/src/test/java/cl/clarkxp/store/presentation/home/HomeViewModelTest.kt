@@ -11,7 +11,7 @@ import cl.clarkxp.store.domain.usecase.GetCartItemCountUseCase
 import cl.clarkxp.store.domain.usecase.GetCartUseCase
 import cl.clarkxp.store.domain.usecase.GetProductsByCategoryUseCase
 import cl.clarkxp.store.domain.usecase.GetProductsUseCase
-import cl.clarkxp.store.domain.usecase.UpdateCartQuantityUseCase
+
 import io.mockk.coEvery
 import io.mockk.mockk
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -35,7 +35,7 @@ class HomeViewModelTest {
     private val getProductsByCategoryUseCase: GetProductsByCategoryUseCase = mockk()
     private val getCartUseCase: GetCartUseCase = mockk()
     private val addToCartUseCase: AddToCartUseCase = mockk(relaxed = true)
-    private val updateCartQuantityUseCase: UpdateCartQuantityUseCase = mockk(relaxed = true)
+
     private val getCartItemCountUseCase: GetCartItemCountUseCase = mockk()
     private val decreaseQuantityUseCase: DecreaseQuantityUseCase = mockk(relaxed = true)
 

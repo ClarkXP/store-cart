@@ -3,7 +3,6 @@ package cl.clarkxp.store.data.repository
 import cl.clarkxp.store.data.local.dao.CartDao
 import cl.clarkxp.store.data.mapper.toCartEntity
 import cl.clarkxp.store.data.mapper.toDomain
-import cl.clarkxp.store.data.mapper.toEntity
 import cl.clarkxp.store.domain.model.CartItem
 import cl.clarkxp.store.domain.model.Product
 import cl.clarkxp.store.domain.repository.CartRepository
@@ -25,23 +24,17 @@ class CartRepositoryImpl @Inject constructor(
         return dao.getTotalItemsCount().map { it ?: 0 }
     }
 
-    // Usamos el método atómico del DAO para evitar condiciones de carrera (read-modify-write)
+    // Operación atómica para agregar un producto nuevo al carrito (INSERT o INCREMENT)
     override suspend fun addToCart(product: Product) {
-        dao.atomicAddToCart(product.toCartEntity(quantity = 1))
+        dao.atomicAddToCart(product.toCartEntity())
     }
 
-    override suspend fun updateQuantity(cartItem: CartItem, newQuantity: Int) {
-        if (newQuantity > 0) {
-            val entity = cartItem.toEntity().copy(quantity = newQuantity)
-            dao.insertCartItem(entity)
-        }
+    // Operación atómica para incrementar la cantidad de un producto existente
+    override suspend fun increaseQuantity(productId: Int) {
+        dao.incrementQuantity(productId)
     }
 
-    override suspend fun removeFromCart(cartItem: CartItem) {
-        dao.deleteCartItem(cartItem.toEntity())
-    }
-
-    // Usamos el método atómico del DAO para evitar condiciones de carrera (read-modify-write)
+    // Operación atómica para decrementar o eliminar si llega a 0
     override suspend fun decreaseQuantity(productId: Int) {
         dao.atomicDecreaseQuantity(productId)
     }

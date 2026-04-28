@@ -4,8 +4,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import cl.clarkxp.store.domain.usecase.CartState as DomainCartState
 import cl.clarkxp.store.domain.usecase.ClearCartUseCase
+import cl.clarkxp.store.domain.usecase.DecreaseQuantityUseCase
 import cl.clarkxp.store.domain.usecase.GetCartUseCase
-import cl.clarkxp.store.domain.usecase.UpdateCartQuantityUseCase
+import cl.clarkxp.store.domain.usecase.IncreaseQuantityUseCase
 import cl.clarkxp.store.presentation.cart.mvi.CartEffect
 import cl.clarkxp.store.presentation.cart.mvi.CartIntent
 import cl.clarkxp.store.presentation.cart.mvi.CartState
@@ -18,7 +19,8 @@ import javax.inject.Inject
 @HiltViewModel
 class CartViewModel @Inject constructor(
     getCartUseCase: GetCartUseCase,
-    private val updateCartQuantityUseCase: UpdateCartQuantityUseCase,
+    private val increaseQuantityUseCase: IncreaseQuantityUseCase,
+    private val decreaseQuantityUseCase: DecreaseQuantityUseCase,
     private val clearCartUseCase: ClearCartUseCase
 ) : ViewModel() {
 
@@ -50,12 +52,14 @@ class CartViewModel @Inject constructor(
         when (intent) {
             is CartIntent.IncreaseQuantity -> {
                 viewModelScope.launch {
-                    updateCartQuantityUseCase(intent.item, intent.item.quantity + 1)
+                    // Operación atómica: UPDATE SET quantity = quantity + 1
+                    increaseQuantityUseCase(intent.item.id)
                 }
             }
             is CartIntent.DecreaseQuantity -> {
                 viewModelScope.launch {
-                    updateCartQuantityUseCase(intent.item, intent.item.quantity - 1)
+                    // Operación atómica: decrementa o elimina si llega a 0
+                    decreaseQuantityUseCase(intent.item.id)
                 }
             }
             is CartIntent.OnClearCartClick -> {
