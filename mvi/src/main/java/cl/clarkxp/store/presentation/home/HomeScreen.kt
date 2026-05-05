@@ -357,3 +357,21 @@ fun PreviewHomeContentWithDetail() {
         )
     }
 }
+
+@Preview(showSystemUi = true)
+@Composable
+fun PreviewHomeContentEmpty() {
+    val mockState = HomeState(
+        isLoading = false,
+        cartCount = 12,
+        products = emptyList(),
+        categories = listOf("Todos", "Electronics", "Jewelery")
+    )
+
+    StoreTheme {
+        HomeContent(
+            state = mockState,
+            onIntent = {}
+        )
+    }
+}
