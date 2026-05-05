@@ -28,7 +28,6 @@ class ProductDetailViewModel @Inject constructor(
     private val decreaseQuantityUseCase: DecreaseQuantityUseCase
 ) : ViewModel() {
 
-    //private val _state = MutableStateFlow<Resource<Product>>(Resource.Loading())
     private val _productRaw = MutableStateFlow<Resource<Product>>(Resource.Loading())
 
     val state: StateFlow<Resource<ProductUiModel>> = combine(
@@ -61,12 +60,7 @@ class ProductDetailViewModel @Inject constructor(
         }.launchIn(viewModelScope)
     }
 
-    @Deprecated("Use increaseQuantity instead", ReplaceWith("increaseQuantity(product)"))
-    fun addToCart(product: Product) {
-        viewModelScope.launch {
-            addToCartUseCase(product)
-        }
-    }
+
 
     fun increaseQuantity(product: Product) {
         viewModelScope.launch {

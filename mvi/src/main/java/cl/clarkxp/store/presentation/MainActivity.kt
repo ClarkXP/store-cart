@@ -21,7 +21,7 @@ import cl.clarkxp.store.presentation.cart.CartScreen
 import cl.clarkxp.store.presentation.detail.DetailScreen
 import cl.clarkxp.store.presentation.home.HomeScreen
 import cl.clarkxp.store.presentation.home.mvi.HomeEffect
-import cl.clarkxp.store.presentation.ui.theme.storeTheme
+import cl.clarkxp.store.presentation.ui.theme.StoreTheme
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -32,7 +32,7 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             // Usamos el tema default de Material por ahora
-            storeTheme {
+            StoreTheme {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background

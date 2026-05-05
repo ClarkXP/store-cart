@@ -155,7 +155,7 @@ val mockUiModel = ProductUiModel(
 @Composable
 fun PreviewProductItem() {
     // Usamos tu tema para que los colores sean correctos
-    cl.clarkxp.store.presentation.ui.theme.storeTheme {
+    cl.clarkxp.store.presentation.ui.theme.StoreTheme {
         ProductItem(
             uiModel = mockUiModel,
             onIntent = {} // Lambda vacía, no hace nada en la preview
@@ -166,7 +166,7 @@ fun PreviewProductItem() {
 @Preview(showBackground = true, name = "Item Agregado (Cantidad 3)")
 @Composable
 fun PreviewProductItemAdded() {
-    cl.clarkxp.store.presentation.ui.theme.storeTheme {
+    cl.clarkxp.store.presentation.ui.theme.StoreTheme {
         ProductItem(
             uiModel = mockUiModel.copy(quantity = 3),
             onIntent = {}

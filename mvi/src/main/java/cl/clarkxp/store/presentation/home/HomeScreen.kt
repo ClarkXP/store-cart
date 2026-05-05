@@ -33,7 +33,7 @@ import cl.clarkxp.store.presentation.home.mvi.HomeIntent
 import cl.clarkxp.store.presentation.home.mvi.HomeState
 import cl.clarkxp.store.presentation.home.ui.FeaturedProductItem
 import cl.clarkxp.store.presentation.home.ui.ProductItem
-import cl.clarkxp.store.presentation.ui.theme.storeTheme
+import cl.clarkxp.store.presentation.ui.theme.StoreTheme
 import kotlinx.coroutines.launch
 
 /**
@@ -315,7 +315,7 @@ fun PreviewHomeContent() {
         categories = listOf("Todos", "Electronics", "Jewelery")
     )
 
-    storeTheme {
+    StoreTheme {
         HomeContent(
             state = mockState,
             onIntent = {}
@@ -342,7 +342,7 @@ fun PreviewHomeContentWithDetail() {
         selectedProductForDetail = mockUi
     )
 
-    storeTheme {
+    StoreTheme {
         HomeContent(
             state = mockState,
             onIntent = {}

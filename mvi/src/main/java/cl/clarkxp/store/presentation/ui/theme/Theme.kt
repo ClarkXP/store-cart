@@ -41,7 +41,7 @@ private val DarkColorScheme = darkColorScheme(
 )
 
 @Composable
-fun storeTheme(
+fun StoreTheme(
     darkTheme: Boolean = isSystemInDarkTheme(), // Detecta el sistema automáticamente
     // Dynamic color está disponible en Android 12+
     dynamicColor: Boolean = true,

@@ -48,7 +48,7 @@ import cl.clarkxp.store.presentation.detail.mvi.DetailEffect
 import cl.clarkxp.store.presentation.detail.mvi.DetailIntent
 import cl.clarkxp.store.presentation.detail.mvi.DetailState
 import cl.clarkxp.store.presentation.home.model.ProductUiModel
-import cl.clarkxp.store.presentation.ui.theme.storeTheme
+import cl.clarkxp.store.presentation.ui.theme.StoreTheme
 import coil.compose.AsyncImage
 
 // --- COMPONENTE STATEFUL (Lógica) ---
@@ -88,32 +88,7 @@ fun DetailContent(
             .navigationBarsPadding() // Respetar gestos del sistema abajo
     ) {
 
-        // --- A. HEADER (Botón Atrás/Cerrar) ---
-        // Lo ponemos en un Box para alinearlo a la derecha o izquierda según gusto
-       /* Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 8.dp)
-        ) {
-            // Icono X o Flecha para cerrar el sheet
-            *//*IconButton(
-                onClick = { onIntent(DetailIntent.OnBackClick) },
-                modifier = Modifier.align(Alignment.CenterEnd) // A la derecha queda mejor en Sheets
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Close, // Asegúrate de tener este icono
-                    contentDescription = "Cerrar",
-                    tint = Color.Gray
-                )
-            }*//*
-            FilledTonalIconButton(
-                { onIntent(DetailIntent.OnBackClick) },
-                shape = MaterialTheme.shapes.medium,
-                modifier = Modifier.align(Alignment.CenterEnd)
-            ) {
-                Icon(Icons.Rounded.Close, "")
-            }
-        }*/
+
 
         // --- B. CONTENIDO SCROLLABLE ---
         // Si hay poco texto, se encoge. Si hay mucho, hace scroll.
@@ -260,157 +235,7 @@ fun DetailContent(
         }
     }
 }
-/*@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun DetailContent(
-    state: DetailState,
-    onIntent: (DetailIntent) -> Unit
-) {
-    Scaffold(
-        *//*topBar = {
-            TopAppBar(
-                title = { },
-                navigationIcon = {
-                    IconButton(onClick = { onIntent(DetailIntent.OnBackClick) }) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Atrás")
-                    }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent)
-            )
-        },*//*
-        bottomBar = {
-            state.uiModel?.let { uiModel ->
-                Surface(shadowElevation = 16.dp, color = MaterialTheme.colorScheme.surface) {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(16.dp)
-                            .navigationBarsPadding()
-                    ) {
-                        if (uiModel.quantity == 0) {
-                            Button(
-                                onClick = { onIntent(DetailIntent.IncreaseQuantity(uiModel.product)) },
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .height(56.dp),
-                                shape = CircleShape
-                            ) { Text("Agregar al Carro") }
-                        } else {
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .height(56.dp),
-                                horizontalArrangement = Arrangement.Center,
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                FilledIconButton(
-                                    onClick = { onIntent(DetailIntent.DecreaseQuantity(uiModel.product.id)) },
-                                    modifier = Modifier.size(48.dp)
-                                ) { Icon(Icons.Default.Remove, null) }
 
-                                Text(
-                                    text = uiModel.quantity.toString(),
-                                    style = MaterialTheme.typography.headlineMedium,
-                                    modifier = Modifier.padding(horizontal = 24.dp)
-                                )
-
-                                FilledIconButton(
-                                    onClick = { onIntent(DetailIntent.IncreaseQuantity(uiModel.product)) },
-                                    modifier = Modifier.size(48.dp)
-                                ) { Icon(Icons.Default.Add, null) }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    ) { paddingValues ->
-        if (state.isLoading) {
-            Box(
-                Modifier.wrapContentHeight(),
-                contentAlignment = Alignment.Center
-            ) { CircularProgressIndicator() }
-        } else {
-            state.uiModel?.let { uiModel ->
-                Column(
-                    modifier = Modifier
-                        //.fillMaxSize()
-                        .wrapContentHeight()
-                        .padding(paddingValues)
-                        .verticalScroll(rememberScrollState())
-                        .padding(horizontal = 16.dp)
-                ) {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(300.dp)
-                            .padding(top = 16.dp),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        AsyncImage(
-                            model = uiModel.product.image, contentDescription = null,
-                            modifier = Modifier.fillMaxHeight(), contentScale = ContentScale.Fit
-                        )
-                        Box(
-                            modifier = Modifier.fillMaxSize(),
-                            contentAlignment = Alignment.TopEnd
-                        ) {
-                            FilledTonalIconButton(
-                                { onIntent(DetailIntent.OnBackClick) },
-                                shape = MaterialTheme.shapes.medium
-                            ) {
-                                Icon(Icons.Rounded.Close, "")
-                            }
-                        }
-                        *//**//*
-                    }
-                    Spacer(Modifier.height(24.dp))
-                    Text(
-                        text = uiModel.product.title,
-                        style = MaterialTheme.typography.headlineSmall,
-                        fontWeight = FontWeight.Bold
-                    )
-                    Spacer(Modifier.height(8.dp))
-
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(
-                            text = uiModel.product.price.toUSD(),
-                            style = MaterialTheme.typography.headlineMedium,
-                            color = MaterialTheme.colorScheme.primary,
-                            fontWeight = FontWeight.Bold
-                        )
-                        Column(horizontalAlignment = Alignment.End) {
-                            SimpleRatingBar(rating = uiModel.product.rating)
-                            Text(
-                                text = "(${uiModel.product.ratingCount} votos)",
-                                style = MaterialTheme.typography.bodySmall,
-                                color = Color.Gray
-                            )
-                        }
-                    }
-
-                    Spacer(Modifier.height(24.dp))
-                    Text(
-                        text = "Descripción",
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Bold
-                    )
-                    Spacer(Modifier.height(8.dp))
-                    Text(
-                        text = uiModel.product.description,
-                        style = MaterialTheme.typography.bodyMedium,
-                        lineHeight = MaterialTheme.typography.bodyMedium.lineHeight * 1.5
-                    )
-                    Spacer(Modifier.height(100.dp))
-                }
-            }
-        }
-    }
-}*/
 
 // --- PREVIEW ---
 @Preview(showSystemUi = true)
@@ -433,7 +258,7 @@ fun PreviewDetailContent() {
         uiModel = ProductUiModel(mockProduct, 0)
     )
 
-    storeTheme {
+    StoreTheme {
         DetailContent(state = state, onIntent = {})
     }
 }
@@ -446,7 +271,7 @@ fun PreviewDetailContentWithQty() {
         isLoading = false,
         uiModel = ProductUiModel(mockProduct, 2) // Con 2 unidades (Controles +/-)
     )
-    storeTheme {
+    StoreTheme {
         DetailContent(state = state, onIntent = {})
     }
 }

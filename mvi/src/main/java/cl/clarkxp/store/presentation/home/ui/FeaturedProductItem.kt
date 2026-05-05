@@ -1,6 +1,6 @@
 package cl.clarkxp.store.presentation.home.ui
 
-import androidx.compose.foundation.BorderStroke
+
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -35,8 +35,7 @@ fun FeaturedProductItem(
             .padding(4.dp) // Margen externo más generoso como en la foto
             .clickable { onIntent(HomeIntent.OnProductClick(uiModel.product.id)) },
         elevation = CardDefaults.cardElevation(2.dp),
-        //border = BorderStroke(1.dp, Color(0xFFE0E0E0)), // Borde suave gris
-        colors = CardDefaults.cardColors(MaterialTheme.colorScheme.onSecondary) // Fondo lavanda muy suave
+        colors = CardDefaults.cardColors(MaterialTheme.colorScheme.onSecondary)
     ) {
         Row(
             modifier = Modifier
@@ -135,9 +134,7 @@ fun FeaturedProductItem(
                             onClick = { onIntent(HomeIntent.DecreaseQuantity(uiModel.product.id)) },
                             shape = RoundedCornerShape(12.dp), // Cuadrado redondeado
                             modifier = Modifier.size(48.dp),
-                            /*colors = IconButtonDefaults.filledIconButtonColors(
-                                containerColor = MaterialTheme.colorScheme.primary
-                            )*/
+
                         ) {
                             Icon(Icons.Default.Remove, contentDescription = "Restar")
                         }
@@ -154,9 +151,7 @@ fun FeaturedProductItem(
                             onClick = { onIntent(HomeIntent.IncreaseQuantity(uiModel.product)) },
                             shape = RoundedCornerShape(12.dp), // Cuadrado redondeado
                             modifier = Modifier.size(48.dp),
-                            /*colors = IconButtonDefaults.filledIconButtonColors(
-                                containerColor = MaterialTheme.colorScheme.primary
-                            )*/
+
                         ) {
                             Icon(Icons.Default.Add, contentDescription = "Sumar")
                         }
@@ -170,7 +165,7 @@ fun FeaturedProductItem(
 @Preview(showBackground = true, widthDp = 360) // widthDp simula el ancho de un teléfono
 @Composable
 fun PreviewFeaturedItem() {
-    cl.clarkxp.store.presentation.ui.theme.storeTheme {
+    cl.clarkxp.store.presentation.ui.theme.StoreTheme {
         FeaturedProductItem(
             uiModel = mockUiModel.copy(product = mockProduct.copy(title = "Producto Destacado")),
             onIntent = {}
@@ -181,7 +176,7 @@ fun PreviewFeaturedItem() {
 @Preview(showBackground = true, name = "Item Agregado (Cantidad 3)", widthDp = 360)
 @Composable
 fun PreviewFeaturedItemAdded() {
-    cl.clarkxp.store.presentation.ui.theme.storeTheme {
+    cl.clarkxp.store.presentation.ui.theme.StoreTheme {
         FeaturedProductItem(
             uiModel = mockUiModel.copy(quantity = 3),
             onIntent = {}

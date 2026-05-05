@@ -25,7 +25,7 @@ import cl.clarkxp.store.presentation.cart.mvi.CartEffect
 import cl.clarkxp.store.presentation.cart.mvi.CartIntent
 import cl.clarkxp.store.presentation.cart.mvi.CartState
 import cl.clarkxp.store.presentation.cart.ui.CartItemRow
-import cl.clarkxp.store.presentation.ui.theme.storeTheme
+import cl.clarkxp.store.presentation.ui.theme.StoreTheme
 
 // --- COMPONENTE STATEFUL ---
 @Composable
@@ -152,7 +152,7 @@ fun PreviewCartContent() {
         showClearDialog = false
     )
 
-    storeTheme {
+    StoreTheme {
         CartContent(
             state = state,
             snackbarHostState = remember { SnackbarHostState() },
@@ -164,7 +164,7 @@ fun PreviewCartContent() {
 @Preview(showSystemUi = true, name = "Empty Cart")
 @Composable
 fun PreviewEmptyCart() {
-    storeTheme {
+    StoreTheme {
         CartContent(
             state = CartState(),
             snackbarHostState = remember { SnackbarHostState() },

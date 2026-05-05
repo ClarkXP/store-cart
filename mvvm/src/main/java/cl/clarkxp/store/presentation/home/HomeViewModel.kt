@@ -34,7 +34,7 @@ class HomeViewModel @Inject constructor(
 
     private val _productsState = MutableStateFlow<Resource<List<Product>>>(Resource.Loading())
 
-    //    val state: StateFlow<Resource<List<Product>>> = _state
+
     val uiState: StateFlow<Resource<List<ProductUiModel>>> = combine(
         _productsState,
         getCartUseCase()
@@ -88,12 +88,7 @@ class HomeViewModel @Inject constructor(
         }.launchIn(viewModelScope)
     }
 
-    @Deprecated("Use increaseQuantity function instead")
-    fun addToCart(product: Product) {
-        viewModelScope.launch {
-            addToCartUseCase(product)
-        }
-    }
+
 
     fun increaseQuantity(product: Product) {
         viewModelScope.launch { addToCartUseCase(product) }
