@@ -1,5 +1,6 @@
 package cl.clarkxp.store.di
 
+import cl.clarkxp.store.base.BuildConfig
 import cl.clarkxp.store.core.constants.AppConstants
 import cl.clarkxp.store.data.remote.api.FakeStoreApi
 import dagger.Module
@@ -16,13 +17,18 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 object NetworkModule {
 
-    //Provee una instancia del cliente OkHttpClient con un interceptor de registro para depuración.
     @Provides
     @Singleton
     fun provideOkHttpClient(): OkHttpClient {
+        val loggingLevel = if (BuildConfig.DEBUG) {
+            HttpLoggingInterceptor.Level.BODY
+        } else {
+            HttpLoggingInterceptor.Level.NONE
+        }
+
         return OkHttpClient.Builder()
             .addInterceptor(HttpLoggingInterceptor().apply {
-                level = HttpLoggingInterceptor.Level.BODY
+                level = loggingLevel
             }).build()
     }
 
