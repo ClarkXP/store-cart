@@ -17,12 +17,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.blur
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import cl.clarkxp.store.core.extensions.capitalizeWords
+import cl.clarkxp.store.mvi.R
 import cl.clarkxp.store.domain.model.Product
 import cl.clarkxp.store.presentation.detail.DetailContent
 import cl.clarkxp.store.presentation.detail.mvi.DetailIntent
@@ -106,6 +109,7 @@ fun HomeContent(
             topBar = {
                 HomeTopBar(
                     cartCount = state.cartCount,
+                    selectedCategory = state.selectedCategory,
                     scrollBehavior = scrollBehavior,
                     onMenuClick = { scope.launch { drawerState.open() } },
                     onCartClick = { onIntent(HomeIntent.OnCartClick) }
@@ -176,12 +180,16 @@ fun HomeContent(
 @Composable
 fun HomeTopBar(
     cartCount: Int,
+    selectedCategory: String,
     scrollBehavior: TopAppBarScrollBehavior,
     onMenuClick: () -> Unit,
     onCartClick: () -> Unit
 ) {
+    val appName = stringResource(R.string.app_name)
+    val title = if (selectedCategory == "Todos") appName else selectedCategory.capitalizeWords()
+
     CenterAlignedTopAppBar(
-        title = { Text("Store MVI", fontWeight = FontWeight.Bold) },
+        title = { Text(title, fontWeight = FontWeight.Bold) },
         navigationIcon = {
             IconButton(onClick = onMenuClick) {
                 Icon(Icons.Default.Menu, contentDescription = "Menú")
